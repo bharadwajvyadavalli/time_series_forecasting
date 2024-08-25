@@ -1,0 +1,12 @@
+def train_lstm(train, test):
+    train_scaled = (train - train.mean()) / train.std()  # Normalize the data
+    model = Sequential()
+    model.add(LSTM(50, activation='relu', input_shape=(1, 1)))
+    model.add(Dense(1))
+    model.compile(optimizer='adam', loss='mse')
+    X = np.array(train_scaled[:-1]).reshape((len(train_scaled) - 1, 1, 1))
+    y = np.array(train_scaled[1:])
+    model.fit(X, y, epochs=200, verbose=0)
+    X_test = np.array(test).reshape((len(test), 1, 1))
+    forecast = model.predict(X_test).flatten()
+    return forecast * train.std() + train.mean()  # Revert normalization
